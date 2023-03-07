@@ -98,8 +98,14 @@ useEffect(() => {
   setNextkey(false);
   const itemview=page*5;
   const allIss=opencount+closedcount;
-if(States==="all")
-setHeader(`All Issue : ${allIss}`);
+
+  if(States==="all" && itemview<allIss)
+  setHeader(`All Issue: ${itemview}/${allIss}`)
+  
+  else if(States==="all" && itemview>=allIss)
+  {setHeader(`All Issue: ${allIss}/${allIss}`)
+  setNextkey(true);
+  }
 
 else if(States==="open" && itemview<opencount)
 setHeader(`Open Issue: ${itemview}/${opencount}`)
