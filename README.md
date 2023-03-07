@@ -25,7 +25,7 @@ Go to the project directory
 
 ```bash
 
-cd git-repo-project
+cd github-issue-controller
 
 ```
 
