@@ -34,36 +34,37 @@ export default function Repo() {
 ]);
 
  //innitially check for all the issue and set count the issues according their states.
-  useEffect(() => {
-    async function load() {
-      const repoName = decodeURIComponent(repo);
-      const [repoData, issuesData,openissue,closedissue] = await Promise.all([
-        api.get(`/repos/${repoName}`),
-        api.get(`/repos/${repoName}/issues`, {
-          params: {
-            state: filters.find((f) => f.active).state,
-            per_page: 5,
-          },
-        }),
-        api.get(`/repos/${repoName}/issues`, {
-          params: {
-            state:"open",
-          },
-        }),
-        api.get(`/repos/${repoName}/issues`, {
-          params: {
-            state: "closed",
-          },
-        })
-      ]);
-      setSelectedRepo(repoData.data);
-      setIssues(issuesData.data);
-      setOpencount(openissue.data.length);
-      setClosedcount(closedissue.data.length);
-      setLoading(false);
-    }
-    load();
-  }, [repo]);
+ useEffect(() => {
+  async function load() {
+    const repoName = decodeURIComponent(repo);
+    const [repoData, issuesData] = await Promise.all([
+      api.get(`/repos/${repoName}`),
+      api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: filters.find((f) => f.active).state,
+          per_page: 5,
+        },
+      }),
+    ]);
+    const openCount = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: "open",
+      },
+    }).then(response => response.data.length);
+    const closedCount = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: "closed",
+      },
+    }).then(response => response.data.length);
+    setSelectedRepo(repoData.data);
+    setIssues(issuesData.data.slice(0, 5));
+    setOpencount(openCount);
+    setClosedcount(closedCount);
+    setLoading(false);
+  }
+  load();
+}, [repo]);
+
 
 
 //code to change the page according to state and pagenumber.
@@ -93,56 +94,49 @@ export default function Repo() {
     loadIssue();
   }, [page,States,repo]);
 
+  
+
  //Control header and next key; 
 useEffect(() => {
-  setNextkey(false);
-  const itemview=page*5;
-  const allIss=opencount+closedcount;
-
-  if(States==="all" && itemview<allIss)
-  setHeader(`All Issue: ${itemview}/${allIss}`)
-  
-  else if(States==="all" && itemview>=allIss)
-  {setHeader(`All Issue: ${allIss}/${allIss}`)
-  setNextkey(true);
+  const allIss = opencount + closedcount;
+  const itemview = page * 5;
+  if (States === 'all') {
+    setHeader(`All Issue: ${Math.min(itemview, allIss)}/${allIss}`);
+    setNextkey(itemview >= allIss);
+  } else if (States === 'open') {
+    setHeader(`Open Issue: ${Math.min(itemview, opencount)}/${opencount}`);
+    setNextkey(itemview >= opencount);
+  } else if (States === 'closed') {
+    setHeader(`Closed Issue: ${Math.min(itemview, closedcount)}/${closedcount}`);
+    setNextkey(itemview >= closedcount);
   }
-
-else if(States==="open" && itemview<opencount)
-setHeader(`Open Issue: ${itemview}/${opencount}`)
-
-else if(States==="open" && itemview>=opencount)
-{setHeader(`Open Issue: ${opencount}/${opencount}`)
-setNextkey(true);
-}
-
-else if(States==="closed" && itemview<closedcount)
-setHeader(`Closed Issue: ${itemview}/${closedcount}`)
-
-else if(States==="closed" && itemview>=closedcount)
-{setHeader(`Closed Issue: ${closedcount}/${closedcount}`)
-setNextkey(true)
-}
- 
-}, [issues])
+}, [issues]);
 
 
 //increment or decrement pages number acchording to states.
-  let a=pages[0],b=pages[1],c=pages[2];
-  function handlePage(action) {
-    if(action==="back" && States==="all") 
-    a=pages[0]-1;
-    if(action==="next" && States==="all") 
-    a=pages[0]+1;
-    if(action==="back" && States==="open") 
-    b=pages[1]-1;
-    if(action==="next" && States==="open") 
-    b=pages[1] + 1;
-    if(action==="back" && States==="closed") 
-    c=pages[2] - 1;
-    if(action==="next" && States==="closed") 
-    c=pages[2] + 1;
-    setPages([a,b,c])
-   }
+function handlePage(action, state) {
+  let [allPages, openPages, closedPages] = pages;
+  
+  switch (state) {
+    case "all":
+      if (action === "back") allPages--;
+      if (action === "next") allPages++;
+      break;
+    case "open":
+      if (action === "back") openPages--;
+      if (action === "next") openPages++;
+      break;
+    case "closed":
+      if (action === "back") closedPages--;
+      if (action === "next") closedPages++;
+      break;
+    default:
+      break;
+  }
+  
+  setPages([allPages, openPages, closedPages]);
+}
+
 
    //changes filter
   function handleFilter(index) {
@@ -199,14 +193,14 @@ setNextkey(true)
       <PageActions>
         <button
           type="button"
-          onClick={() => handlePage("back")}
+          onClick={() => handlePage("back",States)}
           disabled={page < 2}
         >
           Back
         </button>
 
         <button type="button" 
-        onClick={() => handlePage("next")}
+        onClick={() => handlePage("next",States)}
         disabled={Nextkey}
         
         >
