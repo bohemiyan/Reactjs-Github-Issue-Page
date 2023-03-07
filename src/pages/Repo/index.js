@@ -66,18 +66,6 @@ export default function Repo() {
 }, [repo]);
 
 
-
-//code to change the page according to state and pagenumber.
-  useEffect(() => {
-    if(States==="all")
-    setpage(pages[0]);
-    if(States==="open")
-    setpage(pages[1]);
-    if(States==="closed")
-    setpage(pages[2]); 
-   }, [States,pages])
-
-
 //filter out issues acchording their states. 
   useEffect(() => {
     async function loadIssue() {
@@ -111,6 +99,16 @@ useEffect(() => {
     setNextkey(itemview >= closedcount);
   }
 }, [issues]);
+
+//code to change the page according to state and pagenumber.
+  useEffect(() => {
+    if(States==="all")
+    setpage(pages[0]);
+    if(States==="open")
+    setpage(pages[1]);
+    if(States==="closed")
+    setpage(pages[2]); 
+   }, [States,pages])
 
 
 //increment or decrement pages number acchording to states.
