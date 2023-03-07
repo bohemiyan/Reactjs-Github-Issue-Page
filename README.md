@@ -17,7 +17,7 @@ Clone the project
 
 ```bash
 
-git clone https://github.com/bohemiyan/github-issue-controller
+git clone https://github.com/bohemiyan/Reactjs-Github-Issue-Page.git
 
 ```
 
@@ -25,7 +25,7 @@ Go to the project directory
 
 ```bash
 
-cd github-issue-controller
+cd Reactjs-Github-Issue-Page.git
 
 ```
 
