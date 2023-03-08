@@ -100,6 +100,7 @@ useEffect(() => {
   }
 }, [issues]);
 
+
 //code to change the page according to state and pagenumber.
   useEffect(() => {
     if(States==="all")
