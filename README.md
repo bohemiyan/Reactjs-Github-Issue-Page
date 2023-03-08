@@ -36,7 +36,7 @@ Install dependencies
 # Getting Started
 ```npm start```
 
-## Authors
+## Author
 <h1 align="center">Hi 👋, I'm Chirag Mandal</h1>
 <h3 align="center">A passionate frontend developer from India.</h3>
 
