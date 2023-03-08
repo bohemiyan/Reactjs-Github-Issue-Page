@@ -27,11 +27,11 @@ export default function Repo() {
   const [Nextkey, setNextkey] = useState(false);
   const [filterIndex, setfilterIndex] = useState(0);
 
-  const [filters, setFilters] = useState([
+  const filters= [
   { state: "all", label: "All", active: true },
   { state: "open", label: "Open", active: true },
   { state: "closed", label: "Closed", active: true },
-]);
+];
 
  //innitially check for all the issue and set count the issues according their states.
  useEffect(() => {
